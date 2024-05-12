@@ -46,6 +46,15 @@ int main(int argc, char *argv[])
 
     Team *head = NULL; 
     addAtBeginning(&head, input_file, no_teams);
+
+
+    // Task 2
+
+    if(Tasks[1] == 1 )
+    {
+        totalScoreTeam(&head);
+        FinalDelete(&head, &no_teams);
+    }
     printList(head, output_file);
 
     fclose(check);
@@ -54,4 +63,3 @@ int main(int argc, char *argv[])
 
     return 0;
 }
-   

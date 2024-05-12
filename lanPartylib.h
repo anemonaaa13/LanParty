@@ -36,4 +36,8 @@ typedef struct Team{
 void addAtBeginning(Team **head,  FILE *input_file, int no_teams);
 void printList(Team *head, FILE *output_file);
 
-
+void totalScoreTeam(Team **head);
+int powerOf2(int no_teams);
+float MinScore(Team *head);
+void DeleteTeam( Team **head);
+void FinalDelete(Team **head, int *no_teams);
