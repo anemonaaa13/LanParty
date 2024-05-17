@@ -47,7 +47,6 @@ int main(int argc, char *argv[])
     Team *head = NULL; 
     addAtBeginning(&head, input_file, no_teams);
 
-
     // Task 2
 
     if(Tasks[1] == 1 )
@@ -56,6 +55,13 @@ int main(int argc, char *argv[])
         FinalDelete(&head, &no_teams);
     }
     printList(head, output_file);
+
+    // Task 3
+    if(Tasks[2])
+    {
+        
+        Task3(head, no_teams, output_file);
+    }
 
     fclose(check);
     fclose(input_file);
