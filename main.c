@@ -57,15 +57,19 @@ int main(int argc, char *argv[])
     printList(head, output_file);
 
     // Task 3
+    Team * topTeam = NULL;
+    Team* orderTeam = NULL;
+
     if(Tasks[2])
     {
-        
-        Task3(head, no_teams, output_file);
+        Task3(head, &topTeam, no_teams, output_file);
     }
+
 
     fclose(check);
     fclose(input_file);
     fclose(output_file);
+
 
     return 0;
 }

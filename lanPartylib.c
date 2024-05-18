@@ -18,7 +18,14 @@ void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 
         fgetc(input_file);
         fgets(teamName, 100, input_file);
-        teamName[strlen(teamName)-1] = '\0';
+        //teamName[strlen(teamName)-1] = '\0';
+        if (teamName[strlen(teamName)-3] == ' ') {
+            teamName[strlen(teamName)-3] = '\0';
+        } else if (teamName[strlen(teamName)-2] = '\r') {
+            teamName[strlen(teamName)-2] = '\0';
+        }
+
+
         newTeam->teamName = (char*)malloc(strlen(teamName) +1 );
         strcpy(newTeam->teamName, teamName);
 
@@ -51,18 +58,10 @@ void printList(Team *head, FILE *output_file)
     Team *copy = head;
     while( copy != NULL)
     {
-        fprintf(output_file, "%s\n", copy->teamName);
+        fprintf(output_file, "%s\r\n", copy->teamName);
         copy = copy->next;
     }
 }
-
-/*void printStack(Stack* stiva, FILE* output_file)
-{
-    while(!isEmptyStack(stiva))
-    {
-        printf("%s \n", )
-    }
-}*/
 
 void totalScoreTeam(Team **head)
 {
@@ -165,124 +164,57 @@ Queue* createQueue()
     return q;
 }
 
-int isEmptyQueue(Queue *q)
+void enQueue(Queue* q, Team * val)
 {
-    return(q->front == NULL );
-}
-
-void enQueue( Queue *q, Team *t)
-{
-    Match *newMatch = (Match*)malloc(sizeof(Match));
-
-    newMatch->team1 = t;
-    newMatch->team2 = t->next;
-    newMatch->next = NULL;
-
-    if(q->rear == NULL)
-        q->rear = newMatch;
-    else
-    {
-        (q->rear)->next = newMatch;
-        q->rear = newMatch;
+    // Create a new LL node
+    Team * temp = val;
+    
+    if (q->rear == NULL) {
+        q->front = q->rear = temp;
+        return;
     }
-
-    if(q->front == NULL)
-        q->front = q->rear;
+ 
+    // Add the new node at the end of queue and change rear
+    q->rear->next = temp;
+    q->rear = temp;
 }
 
-void golire_coada(Queue *q)
+void deQueue(Queue* q)
 {
-    if(!q)
-        return ;
-
-    Match* aux = q->front;
-
-    while(!isEmptyQueue(q))
-    {
-        /*free_team(aux->team1);
-        free_team(aux->team2);*/
-
-        q->front = aux->next;
-        if( !q->front) // daca front ul ajunge pe ultimul element
-        {
-            q->rear = NULL;
-        }
-
-        golire_coada(q);
-        free(aux);
-    }
+    // If queue is empty, return NULL.
+    if (q->front == NULL)
+        return;
+ 
+    // Store previous front and move front one node ahead
+    Team * temp = q->front;
+ 
+    q->front = q->front->next;
+ 
+    // If front becomes NULL, then change rear also as NULL
+    if (q->front == NULL)
+        q->rear = NULL;
+ 
+    //free(temp);
 }
 
-void pop_coada(Queue **q)
+void pushStack(Team **top, Team * val)
 {
-    if((*q)->front == NULL)
-    {
-        return ;
-    }
-    Match * m = (*q)->front;
-    (*q)->front=(*q)->front->next;
-    free(m);
-}
 
-Stack* createStack()
-{
-    Stack* s = (Stack*)malloc(sizeof(Stack));
-    if( s == NULL )
-        return NULL;
-
-    s->echipa = NULL;
-    return s;
-}
-
-void pushStack(Stack **top, Team *val)
-{
-    Stack* newTeam = (Stack*)malloc(sizeof(Stack));
-    newTeam->echipa = (Team*)malloc(sizeof(Team));
-    newTeam->echipa->no_players = val->no_players;
-
-    newTeam->echipa->teamName = NULL;
-    newTeam->echipa->teamName = (char*)malloc(( strlen(val->teamName) + 1) * sizeof(char));
-    strcpy(newTeam->echipa->teamName, val->teamName);
-    //printf("%s\n", newTeam->echipa->teamName);
-
-    newTeam->echipa->pointsTotal = val->pointsTotal;
-    newTeam->echipa->value = (Player *)malloc(val->no_players*sizeof(Player));
-    for(int i=0; i< val->no_players; i++)
-    {
-        
-        newTeam->echipa->value[i].firstName = (char*) malloc(( strlen(val->value[i].firstName) + 1) * sizeof(char));
-        strcpy(newTeam->echipa->value[i].firstName, val->value[i].firstName);
-
-        
-        newTeam->echipa->value[i].secondName = (char*) malloc(( strlen(val->value[i].secondName) + 1) * sizeof(char));
-        strcpy(newTeam->echipa->value[i].secondName, val->value[i].secondName);
-
-        newTeam->echipa->value[i].points = val->value[i].points;
-    }
-
+    Team* newTeam = (Team*)malloc(sizeof(Team));
+    newTeam->teamName = val->teamName;
+    newTeam->pointsTotal = val->pointsTotal;
     newTeam->next = *top;
     *top = newTeam;
 }
 
-int isEmptyStack(Stack *top)
+void popStack(Team** top)
 {
-    return(top == NULL );
-}
-
-Team* popStack(Stack** top, Queue *q)
-{
-    if(isEmptyStack(*top)) 
-        return NULL;
+    if((*top) == NULL) 
+        return;
     
-    Stack* temp = (*top);
-    printf( "%-33s-%.2f\n", (*top)->echipa->teamName, (*top)->echipa->pointsTotal);
-
-    //printf("%s    %f\n", (*top)->echipa->teamName, (*top)->echipa->pointsTotal);
-    Team* aux=temp->echipa;
-    (*top)=(*top)->next;
-    free(temp);
-    enQueue(q,aux);
-    return aux;
+    Team * temp = (*top);
+    (*top) = (*top)->next;
+    //free(temp);
 }
 
 void free_team(Team* t)
@@ -301,83 +233,65 @@ void free_team(Team* t)
     }
 }
 
-void stiva_castigatori_in_lista(Stack *win, Team *head)
-{
-    Stack *win_copy = win;
-    Team* aux = head;
-    while( !win_copy)
-    {
-        aux = win_copy->echipa; // salvam adresa echipei
-        win_copy->echipa = NULL; // eliminam din stack echipa respectiva
-        Stack *copie = win_copy; // salvam adresa stivei curente
-        win_copy = win_copy->next; // parcurgem stiva de castigatori
-        copie->next = NULL; // taiem legatura din stiva
-        free(copie); // eliberam mem alocata stivei curente
-        aux = aux->next; // trecem la urm nod din lista de echipe
-    }
-} 
+void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
+    Team * win = NULL;
+    Team * lose = NULL;
+    Queue * q = createQueue();
 
-void distribuire_pe_stive(Stack *castigatori, Stack *pierzatori, Queue *que)
-{
-    while(!isEmptyQueue(que))
-    {
+    int nr_runda = 1;
+
+    while (head != NULL) {
+        enQueue(q, head);
+        head = head->next;
+    }
+
+    while (nr_teams > 1) {
+        fprintf(output_file, "\r\n--- ROUND NO:%d\r\n", nr_runda);
+
+        while (q->front != NULL) {
+            Team * t1 = q->front;
+            deQueue(q);
+            
+            Team * t2 = q->front;
+            deQueue(q);
+            
+            fprintf(output_file, "%-33s-%33s\r\n", t1->teamName, t2->teamName);
+            
+            if (t1->pointsTotal > t2->pointsTotal) {
+                t1->pointsTotal++;
+                pushStack(&win, t1);
+                pushStack(&lose, t2);
+            } else {
+                t2->pointsTotal++;
+                pushStack(&win, t2);
+                pushStack(&lose, t1);
+            }
+        }
+
+        if (nr_teams == 16) {
+            Team * temp = win;
+            while(temp != NULL) {
+                pushStack(topTeam, temp);
+                temp = temp->next;
+            }
+        }
         
-        if(que->front->team1->pointsTotal > que->front->team2->pointsTotal)
-        {
-            que->front->team1->pointsTotal += 1;
-            pushStack(&castigatori, que->front->team1);
-           // printf("%s \n", castigatori->echipa->teamName);
-            pushStack(&pierzatori, que->front->team2);
-        }
-        else
-        {    
-            que->front->team2->pointsTotal += 1;
-            pushStack(&pierzatori, que->front->team1);
-            pushStack(&castigatori, que->front->team2);
-            printf("%c", castigatori->echipa->teamName[0]);
-            printf("%s \n", castigatori->echipa->teamName);
-        } 
-        pop_coada(&que);
-    }
-    //inainte de while golire coada
-    while(!isEmptyStack(castigatori))
-        popStack(&castigatori, que);
-}
+        fprintf(output_file, "\r\nWINNERS OF ROUND NO:%d\r\n", nr_runda);
 
-void Task3(Team *head, int no_teams, FILE* output_file)
-{
-    int nr_runda = 1; // initializam numarul de runde
-
-    Team *copy = head; // luam o copie pentru lista de echipe ramase 
-    Queue *q = createQueue();  // creare coada in care vom adauga cate 2 echipe pe rand
-    Stack *win = NULL; // creare stiva pt castigatori
-    Stack *lose = NULL; // creare stiva pt invinsi
-
-    fprintf(output_file, "\n--- ROUND NO:%d\n", nr_runda);
-    for(int i=0; i < no_teams/2; i++)
-        {
-            copy->teamName[strlen(copy->teamName)-1]='\0'; // anulam '\n' de la finalul fiecarui rand
-            fprintf(output_file, "%-33s-%33s\n", copy->teamName, copy->next->teamName);
-            enQueue(q, copy);
-            copy = copy->next->next; 
+        while(win != NULL) {
+            fprintf(output_file, "%-34s-  %.2f\r\n", win->teamName, win->pointsTotal);
+            enQueue(q, win);
+            popStack(&win);
         }
 
-    fprintf(output_file, "\nWINNERS OF ROUND NO:%d", nr_runda);
-    distribuire_pe_stive(win,lose,q);
-    while( no_teams > 1)
-    {
+        while(lose != NULL) {
+            popStack(&lose);
+        }
+
         nr_runda++;
-        // stergere coada 
-        popStack(&win, q);
-        fprintf(output_file, "\n--- ROUND NO:%d\n", nr_runda);
-        // stergere stack invinsi
-        distribuire_pe_stive(win, lose,q);
-        fprintf(output_file, "\nWINNERS OF ROUND NO:%d", nr_runda);
-        no_teams /= 2;
+        nr_teams /= 2;
+
     }
 }
-  
-
-
 
 

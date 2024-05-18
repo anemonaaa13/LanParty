@@ -32,24 +32,12 @@ typedef struct Team{
 
 }Team;
 
-typedef struct Match{
-    Team *team1;
-    Team *team2;
-    struct Match* next;
-
-}Match;
 
 typedef struct Queue{
-    Match* front;
-    Match* rear;
+    Team* front;
+    Team* rear;
 
 }Queue;
-
-typedef struct Stack{
-    Team *echipa;
-    struct Stack* next;
-
-}Stack;
 
 // functii pentru LISTE
 
@@ -62,24 +50,6 @@ float MinScore(Team *head);
 void DeleteTeam(Team **head);
 void FinalDelete(Team **head, int *no_teams);
 
-// functii pentru COADA
-
-Queue* createQueue();
-int isEmptyQueue(Queue *q);
-void enQueue( Queue *q, Team *t);
-void golire_coada(Queue *q);
-void pop_coada(Queue **q);
-
-// functii pentru STIVA
-
-Stack* createStack();
-void pushStack(Stack **top, Team *val);
-int isEmptyStack(Stack *top);
-//Stack* popStack(Stack *top);
-
 void free_team(Team* t);
-void stiva_castigatori_in_lista(Stack *win, Team *head);
-void Task3(Team *head, int no_teams, FILE* output_file);
+void Task3(Team *head, Team**, int, FILE*);
 
-void distribuire_pe_stive(Stack *castigatori, Stack *pierzatori, Queue *que);
-Team* popStack(Stack** top, Queue *q);
