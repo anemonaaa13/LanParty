@@ -39,6 +39,14 @@ typedef struct Queue{
 
 }Queue;
 
+typedef struct BST_team {
+    Team* echipa;
+    struct BST_team *left, *right;
+
+}BST_team;
+
+
+
 // functii pentru LISTE
 
 void addAtBeginning(Team **head,  FILE *input_file, int no_teams);
@@ -53,3 +61,4 @@ void FinalDelete(Team **head, int *no_teams);
 void free_team(Team* t);
 void Task3(Team *head, Team**, int, FILE*);
 
+void Task4(FILE* output_file, Team* topTeam, Team **);

@@ -294,4 +294,55 @@ void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
     }
 }
 
+BST_team* newNodeCreate(Team* value)
+{
+    BST_team* temp = ( BST_team*)malloc(sizeof( BST_team));
+    temp->echipa = value;
+    temp->left = temp->right = NULL;
+    return temp;
+}
+  
+BST_team* insertNode( BST_team* node, Team* value)
+{ 
+    if (node == NULL) {
+        return newNodeCreate(value);
+    }
+    if (value->pointsTotal > node->echipa->pointsTotal) {
+        node->left = insertNode(node->left, value);
+    }
+    else if (value->pointsTotal < node->echipa->pointsTotal) {
+        node->right = insertNode(node->right, value);
+    }
+    else{
+        if(strcmp(value->teamName, node->echipa->teamName) < 0)
+            node->right = insertNode(node->right, value);
+        else
+            node->left = insertNode(node->left, value);
+    }
+    return node;
+}
+
+void inOrder(BST_team* root, FILE* output_file, Team** lista)
+{
+    if (root != NULL) {
+        inOrder(root->left, output_file, lista);;       
+        pushStack(lista, root->echipa);
+        fprintf(output_file, "%-34s-  %.2f\r\n", root->echipa->teamName, root->echipa->pointsTotal);
+        inOrder(root->right, output_file, lista);
+    }
+}
+
+void Task4(FILE* output_file, Team* topTeam, Team** orderTeam)
+{
+
+    fprintf(output_file, "\r\nTOP 8 TEAMS:\r\n");
+    BST_team* root = NULL;
+    while( topTeam != NULL)
+    {
+        root = insertNode(root, topTeam);
+        topTeam = topTeam->next;
+    }
+    inOrder(root, output_file, orderTeam);
+
+}
 

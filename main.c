@@ -66,6 +66,11 @@ int main(int argc, char *argv[])
     }
 
 
+    if(Tasks[3])
+    {
+        Task4(output_file, topTeam, &orderTeam);
+    }
+
     fclose(check);
     fclose(input_file);
     fclose(output_file);
