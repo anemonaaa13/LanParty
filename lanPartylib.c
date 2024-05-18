@@ -8,7 +8,7 @@ void ReadTasks(FILE *check, int no_tasks, int Tasks[])
 
 void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 {
-    for(int i=0; i< no_teams; i++){
+    for(int i=0; i< no_teams; i++) {
         Team* newTeam = (Team*)malloc(sizeof(Team));
 
         int no_players; char teamName[100]; Player *jucator;
@@ -18,22 +18,17 @@ void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 
         fgetc(input_file);
         fgets(teamName, 100, input_file);
-        //teamName[strlen(teamName)-1] = '\0';
         if (teamName[strlen(teamName)-3] == ' ') {
             teamName[strlen(teamName)-3] = '\0';
         } else if (teamName[strlen(teamName)-2] = '\r') {
             teamName[strlen(teamName)-2] = '\0';
         }
 
-
         newTeam->teamName = (char*)malloc(strlen(teamName) +1 );
         strcpy(newTeam->teamName, teamName);
 
         newTeam->value = (Player *)malloc(no_players * sizeof(Player));
-
         for(int j=0; j < no_players; j++){
-           
-
             char buffer[50];
 
             fscanf(input_file, "%s", buffer);
@@ -46,7 +41,6 @@ void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 
             fscanf(input_file, "%d", &jucator->points);
             newTeam->value[j].points = jucator->points;
-
         }
         newTeam->next = *head;
         *head = newTeam;
@@ -102,9 +96,8 @@ float MinScore(Team *head)
     while( copy != NULL)
     {
         if(copy->pointsTotal < MinScore)
-        { 
             MinScore = copy->pointsTotal;
-        }
+
         copy = copy->next;
     }
     return MinScore;
@@ -117,23 +110,18 @@ void DeleteTeam(Team **head)
     if(*head == NULL ) return; // daca lista e goala
 
     Team *copy = *head; // daca elem de sters e capul listei
-    if( copy->pointsTotal == minim )
-    {
+    if( copy->pointsTotal == minim ) {
         *head = (*head)->next;
         free(copy);
         return;
     }
 
     Team *prev = *head;
-    while(copy != NULL)
-    {
-        if(copy->pointsTotal != minim)
-        {
+    while(copy != NULL) {
+        if(copy->pointsTotal != minim) {
             prev = copy;
             copy = copy->next;
-        }
-        else
-        {
+        } else {
             prev->next = copy->next;
             free(copy);
             return;
@@ -146,27 +134,26 @@ void FinalDelete(Team **head, int *no_teams)
     Team *copy = *head;
 
     int n = powerOf2(*no_teams);
-    *no_teams = *no_teams - n;
+    (*no_teams) = (*no_teams) - n;
 
     for(int i=0; i < n ; i++)
-    {
         DeleteTeam(head);
-    }
 }
 
 Queue* createQueue()
 {
     Queue* q = (Queue*)malloc(sizeof(Queue));
+
     if( q == NULL )
         return NULL;
 
     q->front = q->rear = NULL;
+
     return q;
 }
 
 void enQueue(Queue* q, Team * val)
 {
-    // Create a new LL node
     Team * temp = val;
     
     if (q->rear == NULL) {
@@ -174,32 +161,25 @@ void enQueue(Queue* q, Team * val)
         return;
     }
  
-    // Add the new node at the end of queue and change rear
     q->rear->next = temp;
     q->rear = temp;
 }
 
 void deQueue(Queue* q)
 {
-    // If queue is empty, return NULL.
     if (q->front == NULL)
-        return;
+        return ;
  
-    // Store previous front and move front one node ahead
     Team * temp = q->front;
  
     q->front = q->front->next;
  
-    // If front becomes NULL, then change rear also as NULL
     if (q->front == NULL)
         q->rear = NULL;
- 
-    //free(temp);
-}
+ }
 
 void pushStack(Team **top, Team * val)
 {
-
     Team* newTeam = (Team*)malloc(sizeof(Team));
     newTeam->teamName = val->teamName;
     newTeam->pointsTotal = val->pointsTotal;
@@ -214,49 +194,21 @@ void popStack(Team** top)
     
     Team * temp = (*top);
     (*top) = (*top)->next;
-    //free(temp);
-}
-
-void free_team(Team* t)
-{
-    if(!t)
-    {
-        free(t->teamName);
-        for(int i=0; i < t->no_players; i++)
-            {
-                free(t->value[i].firstName);
-                free(t->value[i].secondName);
-            }
-        free(t->value);
-        free_team(t->next);
-        free(t);
-    }
 }
 
 void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
-    Team * win = NULL;
-    Team * lose = NULL;
-    Queue * q = createQueue();
-
+    Team * win = NULL; Team * lose = NULL; Queue * q = createQueue();
     int nr_runda = 1;
-
     while (head != NULL) {
         enQueue(q, head);
         head = head->next;
     }
-
     while (nr_teams > 1) {
         fprintf(output_file, "\r\n--- ROUND NO:%d\r\n", nr_runda);
-
         while (q->front != NULL) {
-            Team * t1 = q->front;
-            deQueue(q);
-            
-            Team * t2 = q->front;
-            deQueue(q);
-            
+            Team * t1 = q->front; deQueue(q);  
+            Team * t2 = q->front; deQueue(q);
             fprintf(output_file, "%-33s-%33s\r\n", t1->teamName, t2->teamName);
-            
             if (t1->pointsTotal > t2->pointsTotal) {
                 t1->pointsTotal++;
                 pushStack(&win, t1);
@@ -267,7 +219,6 @@ void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
                 pushStack(&lose, t1);
             }
         }
-
         if (nr_teams == 16) {
             Team * temp = win;
             while(temp != NULL) {
@@ -275,28 +226,21 @@ void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
                 temp = temp->next;
             }
         }
-        
         fprintf(output_file, "\r\nWINNERS OF ROUND NO:%d\r\n", nr_runda);
-
         while(win != NULL) {
             fprintf(output_file, "%-34s-  %.2f\r\n", win->teamName, win->pointsTotal);
             enQueue(q, win);
             popStack(&win);
         }
-
-        while(lose != NULL) {
+        while(lose != NULL) 
             popStack(&lose);
-        }
-
-        nr_runda++;
-        nr_teams /= 2;
-
+        nr_runda++;  nr_teams /= 2;
     }
 }
 
-BST_team* newNodeCreate(Team* value)
+BST_team* newNodeCreate( Team* value)
 {
-    BST_team* temp = ( BST_team*)malloc(sizeof( BST_team));
+    BST_team* temp = ( BST_team* )malloc(sizeof( BST_team ));
     temp->echipa = value;
     temp->left = temp->right = NULL;
     return temp;
@@ -334,8 +278,8 @@ void inOrder(BST_team* root, FILE* output_file, Team** lista)
 
 void Task4(FILE* output_file, Team* topTeam, Team** orderTeam)
 {
-
     fprintf(output_file, "\r\nTOP 8 TEAMS:\r\n");
+
     BST_team* root = NULL;
     while( topTeam != NULL)
     {
@@ -343,6 +287,161 @@ void Task4(FILE* output_file, Team* topTeam, Team** orderTeam)
         topTeam = topTeam->next;
     }
     inOrder(root, output_file, orderTeam);
-
 }
 
+int height(AVL_Team *N) 
+{ 
+    if (N == NULL) 
+        return 0;
+
+    return N->height; 
+} 
+  
+int max(int a, int b) 
+{ 
+    return (a > b)? a : b; 
+} 
+  
+AVL_Team* newNode(int key) 
+{ 
+    AVL_Team* node = ( AVL_Team* ) malloc(sizeof(AVL_Team)); 
+    node->key = key;
+    node->left = NULL; 
+    node->right = NULL; 
+    node->height = 1;  // new node is initially added at leaf 
+    return(node); 
+} 
+
+AVL_Team* rightRotate(AVL_Team* y) 
+{ 
+    AVL_Team* x = y->left; 
+    AVL_Team* T2 = x->right; 
+  
+    // Perform rotation 
+    x->right = y; 
+    y->left = T2; 
+  
+    // Update heights 
+    y->height = max(height(y->left), height(y->right)) + 1; 
+    x->height = max(height(x->left), height(x->right)) + 1; 
+  
+    // Return new root 
+    return x; 
+} 
+
+AVL_Team* leftRotate(AVL_Team* x) 
+{ 
+    AVL_Team* y = x->right; 
+    AVL_Team* T2 = y->left; 
+  
+    // Perform rotation 
+    y->left = x; 
+    x->right = T2; 
+  
+    //  Update heights 
+    x->height = max(height(x->left), height(x->right)) + 1; 
+    y->height = max(height(y->left), height(y->right)) + 1; 
+  
+    // Return new root 
+    return y; 
+} 
+  
+int getBalance(AVL_Team* N) 
+{ 
+    if (N == NULL) 
+        return 0; 
+
+    return height(N->left) - height(N->right); 
+} 
+
+AVL_Team* insert(AVL_Team* node, int key) 
+{ 
+    /* 1.  Perform the normal BST insertion */
+    if (node == NULL) 
+        return(newNode(key)); 
+  
+    if (key < node->key) 
+        node->left  = insert(node->left, key); 
+    else if (key > node->key) 
+        node->right = insert(node->right, key); 
+    
+    //return node; // sa ne uitam 
+  
+    /* 2. Update height of this ancestor node */
+    node->height = 1 + max(height(node->left), height(node->right)); 
+  
+    /* 3. Get the balance factor of this ancestor 
+          node to check whether this node became 
+          unbalanced */
+    int balance = getBalance(node); 
+  
+    // If this node becomes unbalanced, then 
+    // there are 4 cases 
+  
+    // Left Left Case 
+    if (balance > 1 && key < node->left->key) 
+        return rightRotate(node); 
+  
+    // Right Right Case 
+    if (balance < -1 && key > node->right->key) 
+        return leftRotate(node); 
+  
+    // Left Right Case 
+    if (balance > 1 && key > node->left->key) 
+    { 
+        node->left =  leftRotate(node->left); 
+        return rightRotate(node); 
+    } 
+  
+    // Right Left Case 
+    if (balance < -1 && key < node->right->key) 
+    { 
+        node->right = rightRotate(node->right); 
+        return leftRotate(node); 
+    } 
+  
+    /* return the (unchanged) node pointer */
+    return node; 
+} 
+
+void printFromList(Team * list, int position, FILE * file) {
+
+    for (int i = 0; i < position; i++) {
+        list = list->next;
+    }
+    fprintf(file, "%s\r\n", list->teamName);
+}
+
+void printAVL(AVL_Team* root, int level, Team * list, FILE * file)
+{
+    if (root == NULL)
+        return;
+    if (level == 1)
+        printFromList(list, root->key, file);
+    else if (level > 1) {
+        printAVL(root->left, level - 1, list, file);
+        printAVL(root->right, level - 1, list, file);
+    }
+}
+
+void Task5(FILE* output_file, Team* topTeam)
+{
+    fprintf(output_file, "\r\nTHE LEVEL 2 TEAMS ARE:\r\n");
+
+    AVL_Team* root = NULL;
+    Team * list = NULL;
+    int nr_teams = 8;
+
+    while(topTeam != NULL) {
+        pushStack(&list, topTeam);
+        topTeam = topTeam->next;
+    }
+
+    for (int i = 0; i < nr_teams; i++) {
+        root = insert(root, i);
+    }
+
+    int level = 2;
+    printAVL(root, level + 1, list, output_file);
+    
+}
