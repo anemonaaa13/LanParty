@@ -3,9 +3,11 @@
 void ReadTasks(FILE *check, int no_tasks, int Tasks[])
 {
     for(int i=0; i < no_tasks; i++)
+        // Citeste fiecare task si il stocheaza in vectorul Tasks
         fscanf(check, "%d", &Tasks[i]);
 }
 
+// Functie pentru adaugarea echipelor la inceputul listei
 void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 {
     for(int i=0; i< no_teams; i++) {
@@ -13,12 +15,12 @@ void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
 
         int no_players; char teamName[100]; Player *jucator;
 
-        fscanf(input_file, "%d", &no_players);
+        fscanf(input_file, "%d", &no_players); // citire numar jucatori
         newTeam->no_players = no_players;
 
         fgetc(input_file);
-        fgets(teamName, 100, input_file);
-        if (teamName[strlen(teamName)-3] == ' ') {
+        fgets(teamName, 100, input_file); // citire nume echipa
+        if (teamName[strlen(teamName)-3] == ' ') { // eliminare caractere speciale si spatii suplimentare
             teamName[strlen(teamName)-3] = '\0';
         } else if (teamName[strlen(teamName)-2] = '\r') {
             teamName[strlen(teamName)-2] = '\0';
@@ -31,18 +33,18 @@ void addAtBeginning(Team **head,  FILE *input_file, int no_teams)
         for(int j=0; j < no_players; j++){
             char buffer[50];
 
-            fscanf(input_file, "%s", buffer);
-            newTeam->value[j].firstName = malloc(strlen(buffer) + 1);
+            fscanf(input_file, "%s", buffer); // citire nume jucator
+            newTeam->value[j].firstName = malloc(strlen(buffer) + 1); 
             strcpy(newTeam->value[j].firstName, buffer);
 
-            fscanf(input_file, "%s", buffer);
+            fscanf(input_file, "%s", buffer); // citire prenume jucator
             newTeam->value[j].secondName = malloc(strlen(buffer) + 1);
             strcpy(newTeam->value[j].secondName, buffer);
 
-            fscanf(input_file, "%d", &jucator->points);
+            fscanf(input_file, "%d", &jucator->points); // citire punctaj jucator
             newTeam->value[j].points = jucator->points;
         }
-        newTeam->next = *head;
+        newTeam->next = *head; //  adauga noua echipa la inceputul listei
         *head = newTeam;
     }
 }
@@ -57,6 +59,7 @@ void printList(Team *head, FILE *output_file)
     }
 }
 
+// Functie pentru calcularea scorului total al fiecarei echipe
 void totalScoreTeam(Team **head)
 {
     Team *copy = *head;
@@ -66,15 +69,18 @@ void totalScoreTeam(Team **head)
         float total = 0;
         for( int i=0; i < (copy->no_players); i++ )
         {
-        total = total + copy->value[i].points;
+            // Calculeaza totalul punctelor pentru fiecare echipa
+            total = total + copy->value[i].points;
         }
 
+    // Calculeaza media aritmetica a punctelor si o atribuie echipei
     total = total / copy->no_players ; 
     copy->pointsTotal = total;
-    copy = copy->next; 
+    copy = copy->next; // parcurgem lista de echipe
     }
 }
 
+// Functie pentru calcularea celei mai mari puteri a lui 2 mai mica sau egala cu numarul echipelor
 int powerOf2(int no_teams)
 {
     int n=1;
@@ -87,6 +93,7 @@ int powerOf2(int no_teams)
     return deleted_teams;
 }
 
+// Functie pentru gasirea scorului minim din lista de echipe
 float MinScore(Team *head)
 {
     Team *copy = head;
@@ -95,21 +102,23 @@ float MinScore(Team *head)
 
     while( copy != NULL)
     {
+        // Gaseste scorul minim din lista de echipe
         if(copy->pointsTotal < MinScore)
             MinScore = copy->pointsTotal;
 
-        copy = copy->next;
+        copy = copy->next; // parcurgem lista
     }
     return MinScore;
 }
 
+// Functie pentru stergerea unei echipe din lista
 void DeleteTeam(Team **head)
 {
     float minim = MinScore(*head);
 
     if(*head == NULL ) return; // daca lista e goala
 
-    Team *copy = *head; // daca elem de sters e capul listei
+    Team *copy = *head; // daca elementul de sters e capul listei
     if( copy->pointsTotal == minim ) {
         *head = (*head)->next;
         free(copy);
@@ -129,6 +138,7 @@ void DeleteTeam(Team **head)
     }
 }
 
+// Functie pentru stergerea echipelor pana cand numarul echipelor ramase este o putere a lui 2
 void FinalDelete(Team **head, int *no_teams)
 {
     Team *copy = *head;
@@ -140,6 +150,7 @@ void FinalDelete(Team **head, int *no_teams)
         DeleteTeam(head);
 }
 
+// Functie pentru stergerea completa a listei de echipe
 void deleteList(Team **head)
 {
     Team *headcopy;
@@ -159,6 +170,7 @@ void deleteList(Team **head)
     *head = NULL;
 }
 
+//Functii pentru operatii cu cozi
 Queue* createQueue()
 {
     Queue* q = (Queue*)malloc(sizeof(Queue));
@@ -218,11 +230,11 @@ void popStack(Team** top)
 void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
     Team * win = NULL; Team * lose = NULL; Queue * q = createQueue();
     int nr_runda = 1;
-    while (head != NULL) {
+    while (head != NULL) { // Adauga toate echipele in coada
         enQueue(q, head);
         head = head->next;
     }
-    while (nr_teams > 1) {
+    while (nr_teams > 1) {  // Desfasurarea meciurilor pana cand ramane o singura echipa
         fprintf(output_file, "\r\n--- ROUND NO:%d\r\n", nr_runda);
         while (q->front != NULL) {
             Team * t1 = q->front; deQueue(q);  
@@ -238,7 +250,7 @@ void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
                 pushStack(&lose, t1);
             }
         }
-        if (nr_teams == 16) {
+        if (nr_teams == 16) { // Daca numarul echipelor este 16, adauga echipele castigatoare in stiva topTeam
             Team * temp = win;
             while(temp != NULL) {
                 pushStack(topTeam, temp);
@@ -257,6 +269,7 @@ void Task3(Team *head, Team ** topTeam, int nr_teams, FILE * output_file) {
     }
 }
 
+// Functie pentru crearea unui nod in arborele BST
 BST_team* newNodeCreate( Team* value)
 {
     BST_team* temp = ( BST_team* )malloc(sizeof( BST_team ));
@@ -264,7 +277,8 @@ BST_team* newNodeCreate( Team* value)
     temp->left = temp->right = NULL;
     return temp;
 }
-  
+
+// Functie pentru inserarea unui nod in arborele BST
 BST_team* insertNode( BST_team* node, Team* value)
 { 
     if (node == NULL) {
@@ -285,6 +299,7 @@ BST_team* insertNode( BST_team* node, Team* value)
     return node;
 }
 
+// Functie pentru traversarea in-order a arborelui BST
 void inOrder(BST_team* root, FILE* output_file, Team** lista)
 {
     if (root != NULL) {
@@ -308,6 +323,7 @@ void Task4(FILE* output_file, Team* topTeam, Team** orderTeam)
     inOrder(root, output_file, orderTeam);
 }
 
+// Functie pentru calcularea inaltimii unui nod din arborele AVL
 int height(AVL_Team *N) 
 { 
     if (N == NULL) 
@@ -320,51 +336,55 @@ int max(int a, int b)
 { 
     return (a > b)? a : b; 
 } 
-  
+
+// Functie pentru crearea unui nod nou in arborele AVL
 AVL_Team* newNode(int key) 
 { 
     AVL_Team* node = ( AVL_Team* ) malloc(sizeof(AVL_Team)); 
     node->key = key;
     node->left = NULL; 
     node->right = NULL; 
-    node->height = 1;  // new node is initially added at leaf 
+    node->height = 1;  // nodul nou este initial adaugat ca frunza
     return(node); 
 } 
 
+// Functie pentru rotatia dreapta in arborele AVL
 AVL_Team* rightRotate(AVL_Team* y) 
 { 
     AVL_Team* x = y->left; 
     AVL_Team* T2 = x->right; 
   
-    // Perform rotation 
+    // Realizarea rotatiei 
     x->right = y; 
     y->left = T2; 
   
-    // Update heights 
+    // Actualizarea inaltimilor 
     y->height = max(height(y->left), height(y->right)) + 1; 
     x->height = max(height(x->left), height(x->right)) + 1; 
   
-    // Return new root 
+    // Returnarea noii radacini 
     return x; 
 } 
 
+// Functie pentru rotatia stanga in arborele AVL
 AVL_Team* leftRotate(AVL_Team* x) 
 { 
     AVL_Team* y = x->right; 
     AVL_Team* T2 = y->left; 
   
-    // Perform rotation 
+    // Realizarea rotatiei 
     y->left = x; 
     x->right = T2; 
   
-    //  Update heights 
+    // Actualizarea inaltimilor 
     x->height = max(height(x->left), height(x->right)) + 1; 
     y->height = max(height(y->left), height(y->right)) + 1; 
   
-    // Return new root 
+    // Returnarea noii radacini 
     return y; 
 } 
-  
+
+// Functie pentru obtinerea factorului de echilibrare al unui nod
 int getBalance(AVL_Team* N) 
 { 
     if (N == NULL) 
@@ -373,54 +393,50 @@ int getBalance(AVL_Team* N)
     return height(N->left) - height(N->right); 
 } 
 
+// Functie pentru inserarea unui nod în arborele AVL
 AVL_Team* insert(AVL_Team* node, int key) 
 { 
-    /* 1.  Perform the normal BST insertion */
     if (node == NULL) 
-        return(newNode(key)); 
+        return(newNode(key)); // inserare BST normala
   
     if (key < node->key) 
         node->left  = insert(node->left, key); 
     else if (key > node->key) 
         node->right = insert(node->right, key); 
       
-    /* 2. Update height of this ancestor node */
+    // Actualizarea inaltimii acestui nod stramos 
     node->height = 1 + max(height(node->left), height(node->right)); 
   
-    /* 3. Get the balance factor of this ancestor 
-          node to check whether this node became 
-          unbalanced */
+    // Obținerea factorului de echilibrare al acestui nod stramos
+    // pentru a verifica daca acest nod a devenit dezechilibrat 
     int balance = getBalance(node); 
   
-    // If this node becomes unbalanced, then 
-    // there are 4 cases 
+    // Daca acest nod devine dezechilibrat, atunci 
+    // exista 4 cazuri 
   
-    // Left Left Case 
+    // Cazul Stanga - Stanga ( LL ) 
     if (balance > 1 && key < node->left->key) 
         return rightRotate(node); 
-  
-    // Right Right Case 
+    // Cazul Dreapta - Dreapta ( RR )
     if (balance < -1 && key > node->right->key) 
         return leftRotate(node); 
-  
-    // Left Right Case 
+    // Cazul Stanga - Dreapta ( LR )
     if (balance > 1 && key > node->left->key) 
     { 
         node->left =  leftRotate(node->left); 
         return rightRotate(node); 
     } 
-  
-    // Right Left Case 
+    // Cazul Dreapta - Stanga ( RL )
     if (balance < -1 && key < node->right->key) 
     { 
         node->right = rightRotate(node->right); 
         return leftRotate(node); 
     } 
-  
-    /* return the (unchanged) node pointer */
+    // returnarea pointer-ului nodului (nemodificat)
     return node; 
 } 
 
+// Functie pentru afisarea echipelor din lista la o anumita pozitie
 void printFromList(Team * list, int position, FILE * file) {
 
     for (int i = 0; i < position; i++) {
@@ -429,6 +445,7 @@ void printFromList(Team * list, int position, FILE * file) {
     fprintf(file, "%s\r\n", list->teamName);
 }
 
+// Functie pentru afisarea AVL-ului la un anumit nivel
 void printAVL(AVL_Team* root, int level, Team * list, FILE * file)
 {
     if (root == NULL)
