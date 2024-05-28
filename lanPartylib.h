@@ -93,3 +93,6 @@ void printAVL(AVL_Team* root, int level, Team * list, FILE * file);
 void Task3(Team *head, Team**, int, FILE*);
 void Task4(FILE* output_file, Team* topTeam, Team **);
 void Task5(FILE* output_file, Team* topTeam);
+
+// functii eliberare memorie
+void deleteList(Team **head);

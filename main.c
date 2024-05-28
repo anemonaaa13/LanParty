@@ -49,7 +49,10 @@ int main(int argc, char *argv[])
     // Task 5
     if(Tasks[4] == 1)
         Task5(output_file, orderTeam);
-
+    //dealocare de memorie
+    deleteList(&head);
+    deleteList(&topTeam);
+    deleteList(&orderTeam);
     fclose(check);
     fclose(input_file);
     fclose(output_file);

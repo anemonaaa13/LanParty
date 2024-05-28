@@ -140,6 +140,25 @@ void FinalDelete(Team **head, int *no_teams)
         DeleteTeam(head);
 }
 
+void deleteList(Team **head)
+{
+    Team *headcopy;
+    while(*head!=NULL)
+    {
+        headcopy = (*head)->next;
+        free((*head)->teamName);
+        for(int i=0;i<(*head)->no_players;i++)
+        {
+            free((*head)->value[i].firstName);
+            free((*head)->value[i].secondName);
+        }
+        free((*head)->value);
+        free(*head);
+        *head = headcopy;
+    }
+    *head = NULL;
+}
+
 Queue* createQueue()
 {
     Queue* q = (Queue*)malloc(sizeof(Queue));
@@ -364,9 +383,7 @@ AVL_Team* insert(AVL_Team* node, int key)
         node->left  = insert(node->left, key); 
     else if (key > node->key) 
         node->right = insert(node->right, key); 
-    
-    //return node; // sa ne uitam 
-  
+      
     /* 2. Update height of this ancestor node */
     node->height = 1 + max(height(node->left), height(node->right)); 
   
